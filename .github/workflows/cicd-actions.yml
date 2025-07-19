@@ -1,7 +1,7 @@
 name: streamlined cicd for deploying banking application
 on:
   push:
-# pull request:
+## pull request:
     branches: [main]
 jobs: # similar like pipeline
   compile: # similar like stage
