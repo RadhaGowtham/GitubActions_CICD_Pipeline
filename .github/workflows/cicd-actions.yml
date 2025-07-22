@@ -110,4 +110,12 @@ jobs:
         run: |
           BUILD_NUMBER=${{ github.run_number }}
           sed -i "s|radhagowthamhub/bankapp:.*|radhagowthamhub/bankapp:${BUILD_NUMBER}|g" manifest/ds.yml
+      - name: Commit and Push Updated Manifest
+        run: |
+         git config --global user.name "github-actions"
+         git config --global user.email "github-actions@github.com"
+         git add manifest/ds.yml
+         git commit -m "Update image tag to build ${{ github.run_number }}"
+         git push origin main
+    
 
