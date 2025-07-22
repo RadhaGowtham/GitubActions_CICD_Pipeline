@@ -8,7 +8,7 @@ on:
 
 jobs:
   compile:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -23,7 +23,7 @@ jobs:
         run: mvn compile
 
   security-check:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: compile
     steps:
       - name: Checkout code
@@ -48,7 +48,7 @@ jobs:
         run: gitleaks detect --source . --report-path=gitleaks-report.json --report-format=json
 
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: security-check
     steps:
       - name: Checkout code
@@ -65,7 +65,7 @@ jobs:
         run: mvn test
 
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: Checkout code
