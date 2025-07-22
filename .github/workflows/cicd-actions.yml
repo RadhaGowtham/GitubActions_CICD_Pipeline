@@ -105,4 +105,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: radhagowthamhub/bankapp:latest
+          tags: radhagowthamhub/bankapp:${{ github.run_number}}
