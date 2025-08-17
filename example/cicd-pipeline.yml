@@ -69,6 +69,8 @@ jobs: # similar like pipeline
         cache: maven
     - name: build
       run: mvn package
+# When you build a Java project (with Maven or Gradle), the result is a .jar file stored in the target/ folder. This file is not automatically saved after the GitHub Actions run finishes.
+# This uploads the .jar file as an artifact, which means it's stored on GitHub’s servers and attached to the workflow run.
     - name: Upload JAR artifact
       uses: actions/upload-artifact@v4
       with:
@@ -99,9 +101,9 @@ jobs: # similar like pipeline
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Set up QEMU
+    - name: Set up QEMU       #This is needed if you're building Docker images for platforms other than the host machine (e.g., linux/arm64 on a regular x86_64 runner).
       uses: docker/setup-qemu-action@v3
-    - name: Set up Docker Buildx
+    - name: Set up Docker Buildx   #Docker Buildx is an advanced Docker CLI plugin that enables multi-platform builds and caching features.
       uses: docker/setup-buildx-action@v3
     - name: Build and Push Docker image
       uses: docker/build-push-action@v6
