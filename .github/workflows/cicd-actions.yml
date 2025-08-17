@@ -70,6 +70,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for SonarQube
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4.1.0
@@ -87,17 +89,12 @@ jobs:
           name: app-jar
           path: target/*.jar
 
-      - name: Prepare for SonarQube Scan
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-        # Assumes sonar-project.properties is present in root
+        # Assumes sonar-project.properties exists at repo root
 
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
