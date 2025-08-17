@@ -64,7 +64,7 @@ jobs:
       - name: Run Unit Tests
         run: mvn test
 
-  build:
+  build-and-sonarqube-scan:
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -87,6 +87,27 @@ jobs:
           name: app-jar
           path: target/*.jar
 
+      - name: Prepare for SonarQube Scan
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+        # Assumes sonar-project.properties is present in root
+
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -105,17 +126,17 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: radhagowthamhub/bankapp:${{ github.run_number}}
+          tags: radhagowthamhub/bankapp:${{ github.run_number }}
+
       - name: Update image tag in Kubernetes manifest
         run: |
           BUILD_NUMBER=${{ github.run_number }}
           sed -i "s|radhagowthamhub/bankapp:.*|radhagowthamhub/bankapp:${BUILD_NUMBER}|g" manifest/ds.yml
+
       - name: Commit and Push Updated Manifest
         run: |
-         git config --global user.name "github-actions"
-         git config --global user.email "github-actions@github.com"
-         git add manifest/ds.yml
-         git commit -m "Update image tag to build ${{ github.run_number }}"
-         git push origin main
-    
-
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add manifest/ds.yml
+          git commit -m "Update image tag to build ${{ github.run_number }}"
+          git push origin main
