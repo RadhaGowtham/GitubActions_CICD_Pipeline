@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
       - name: bankapp
-        image: radhagowthamhub/bankapp:18
+        image: radhagowthamhub/bankapp:32
         ports:
         - containerPort: 8080
         env:
